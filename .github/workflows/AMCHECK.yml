@@ -560,8 +560,12 @@ jobs:
             rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname"
           done
           sort -u results/tested -o results/tested
-          rm -rf results/job-*
+          rm -rf results/job-* results/icons results/out-* results/ok-* results/ko-* results/log-*
           git add results
+          if git status --porcelain | grep -v -e 'results/tested$' -e 'results/tested.prev$' -e 'results/excluded$' -e 'results/log$' | grep -q '^A '; then
+            echo "unexpected new tracked file under results/"
+            exit 1
+          fi
 
       - name: "Show results"
         if: ${{ needs.generate-matrix.outputs.skip != 'true' && github.event.inputs.reset_stats != 'true' }}
@@ -631,11 +635,9 @@ jobs:
            git config --global user.name web-flow
            git config --global user.email "noreply@github.com"
 
-      - name: "Reset all tested"
+      - name: "Rotate tested list"
         run: |
-          echo "All apps already tested..." >> $GITHUB_STEP_SUMMARY
-          echo "### stats RESET" >> $GITHUB_STEP_SUMMARY
-          git rm -r results
-          git commit -m "reset stats"
-          git push --force
-          git clean -f
+          echo "Sweep complete, rotating tested list..." >> $GITHUB_STEP_SUMMARY
+          git mv results/tested results/tested.prev
+          git commit -m "cycle complete: rotate tested to tested.prev"
+          git push --force-with-lease

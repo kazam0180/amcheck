@@ -19871,3 +19871,15 @@ APPIMAGE='no'
 GITHUB='no'
 DURATION=20
 -----------------------------------------------------------------
+APP="0ad"
+APPIMAGE='yes'
+GITHUB='no'
+SITE="https://play0ad.com"
+DURATION=214
+-----------------------------------------------------------------
+APP="7zip"
+APPIMAGE='no'
+GITHUB='yes'
+SITE="https://www.7-zip.org"
+DURATION=7
+-----------------------------------------------------------------

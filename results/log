@@ -19848,3 +19848,15 @@ APPIMAGE='no'
 GITHUB='yes'
 SITE="https://www.7-zip.org"
 -----------------------------------------------------------------
+APP="0ad"
+APPIMAGE='yes'
+GITHUB='no'
+SITE="https://play0ad.com"
+DURATION=139
+-----------------------------------------------------------------
+APP="7zip"
+APPIMAGE='no'
+GITHUB='yes'
+SITE="https://www.7-zip.org"
+DURATION=6
+-----------------------------------------------------------------

@@ -48,6 +48,9 @@ env:
   BRANCH: main
   TOTEST: ${{ inputs.totest }}
   CHUNK_SIZE: ${{ inputs.chunk_size }}
+  # List files (tested/excluded/appslist) are order-sensitive: comm --check-order
+  # and sort must agree on byte order on every runner and every local machine.
+  LC_ALL: C
 
 jobs:
   triggered:

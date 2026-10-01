@@ -578,6 +578,8 @@ jobs:
 
       - name: "Push"
         if: ${{ needs.generate-matrix.outputs.skip != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config --global user.name web-flow
           git config --global user.email "noreply@github.com"

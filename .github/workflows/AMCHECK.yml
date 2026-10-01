@@ -79,7 +79,7 @@ jobs:
         if: github.event.inputs.reset_stats != 'true'
         id: count
         run: |
-          sort programs/x86_64-apps | grep -v "\"kdegames\"\|\"kdeutils\"\|\"node\"\|\"platform-tools\"\| ffwa-\|am-utils" | awk '{print $2}' > appslist
+          grep -v "\"kdegames\"\|\"kdeutils\"\|\"node\"\|\"platform-tools\"\| ffwa-\|am-utils" programs/x86_64-apps | awk '{print $2}' | sort -u > appslist
           x64Count=$(wc -l < appslist)
           echo "all=$x64Count" >> $GITHUB_OUTPUT
 
@@ -166,7 +166,7 @@ jobs:
               exit 0
             else
               echo "Getting temp list"
-              comm -23 appslist results/tested > totest_tmp.list
+              comm --check-order -23 appslist results/tested > totest_tmp.list
             fi
           else
             echo "First run!"
@@ -174,7 +174,7 @@ jobs:
           fi
           if [[ -f results/excluded ]]; then
             echo "Excluded exists"
-            comm -23 totest_tmp.list results/excluded > totest.list
+            comm --check-order -23 totest_tmp.list results/excluded > totest.list
             if [ ! -s totest.list ]; then
               echo "List is empty"
               echo " 🏁 Nothing to test 🏁" >> $GITHUB_STEP_SUMMARY
@@ -190,8 +190,8 @@ jobs:
             FILES="${{ github.event.inputs.what_test }}"
           elif [ "${{ github.event.inputs.retest_excluded }}" == 'true' ]; then
             echo "Testing excluded"
-            if [ -f result-var/excluded ]; then
-              FILES=$(cat result-var/excluded)
+            if [ -f results/excluded ]; then
+              FILES=$(cat results/excluded)
             else
               echo "Nothing excluded!"
               echo "Nothing excluded!" >> $GITHUB_STEP_SUMMARY
@@ -412,6 +412,7 @@ jobs:
             if [ "$LASTDIR" = am ]; then
               echo "### 💀 ${{ matrix.file }}" >> $GITHUB_STEP_SUMMARY
               echo "${{ matrix.file }}" >> results/log-${{ matrix.file }}
+              echo "${{ matrix.file }}" >> results/ko-${{ matrix.file }}
               exit 1
 
             # If the last modified directory contains a file named "remove", check the installed files
@@ -453,7 +454,7 @@ jobs:
               printf "\n-------------------------------------------------------------\n\n"
 
               # Remove the application
-              am -R "$LASTDIR" && echo "${{ matrix.file }}" >> results/ok-${{ matrix.file }} || echo "${{ matrix.file }}" >> results/log-${{ matrix.file }}
+              am -R "$LASTDIR" && echo "${{ matrix.file }}" >> results/ok-${{ matrix.file }} || { echo "${{ matrix.file }}" >> results/log-${{ matrix.file }}; echo "${{ matrix.file }}" >> results/ko-${{ matrix.file }}; }
 
             # Any other result is a failure
             else
@@ -462,6 +463,7 @@ jobs:
           fi
 
       - name: "Upload out ⬆️"
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: out-${{ matrix.file }}

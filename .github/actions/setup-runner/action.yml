@@ -1,9 +1,5 @@
 name: "Setup AMCHECK runner"
 description: "Install apt deps, relax AppArmor, install AM manually (moved verbatim from AMCHECK run-actions)"
-outputs:
-  am_version:
-    description: "First line of am --version"
-    value: ${{ steps.amver.outputs.am_version }}
 runs:
   using: "composite"
   steps:
@@ -29,7 +25,3 @@ runs:
         export AMDATADIR="${XDG_DATA_HOME:-$HOME/.local/share}"/AM
         mkdir -p "$AMDATADIR" || exit 1
         cp -r programs/x86_64-apps "$AMDATADIR"/ || exit 1
-    - name: "Record AM version"
-      id: amver
-      shell: bash
-      run: echo "am_version=$(am --version 2>/dev/null | head -1)" >> "$GITHUB_OUTPUT"

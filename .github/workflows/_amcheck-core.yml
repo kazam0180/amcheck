@@ -217,6 +217,10 @@ jobs:
             fi
             head -n "$how_many" totest.list > "$TOTEST_LIST" || cp totest.list "$TOTEST_LIST"
           fi
+          if [ ! -s "$TOTEST_LIST" ]; then
+            echo "No apps selected (empty what_test/how_many/excluded?) — failing loudly instead of running an empty matrix." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
           echo '-------------------------------------------------------------'
           echo 'Testing files:'
           echo '-------------------------------------------------------------'
@@ -341,11 +345,6 @@ jobs:
 
       - name: "Setup runner"
         uses: ./amcheck/.github/actions/setup-runner
-
-      - name: "Checkout repository"
-        uses: actions/checkout@v7
-        with:
-          path: results
 
       - name: "Create directory"
         working-directory: programs/x86_64
@@ -487,7 +486,7 @@ jobs:
           compression-level: 0
 
       - name: "Upload icons ⬆️"
-        if: ${{ inputs.upload_icons && always() }}
+        if: always() && inputs.upload_icons
         uses: actions/upload-artifact@v7
         with:
           name: icons-chunk-${{ matrix.chunk }}
@@ -496,7 +495,7 @@ jobs:
 
   update-results:
     name: "results 📰"
-    needs: run-actions
+    needs: [generate-matrix, run-actions]
     runs-on: ubuntu-latest
     if: (always() && inputs.reset_stats != 'true')
     steps:
@@ -543,10 +542,6 @@ jobs:
             echo '-----------------------------------------------------------------'
             echo "$appname"
             echo '-----------------------------------------------------------------'
-            if [ -z "$size" ]; then
-              size=$(cat "$LogFile" | grep 'size' | cut -d'=' -f2)
-              echo "size is $size"
-            fi
             KoFile="$jobdir/ko-$appname"
             if [[ -f "$KoFile" ]]; then
               echo "$appname" | tee -a failing results/excluded

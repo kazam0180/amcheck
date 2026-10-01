@@ -278,7 +278,7 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p "$GITHUB_WORKSPACE/static"
-          grep -v '^#' "$GITHUB_WORKSPACE/amcheck/.github/amcheck-blocklist.txt" > /tmp/blocklist || true
+          grep -v -e '^#' -e '^$' "$GITHUB_WORKSPACE/amcheck/.github/amcheck-blocklist.txt" > /tmp/blocklist || true
           while IFS= read -r app || [ -n "$app" ]; do
             [ -z "$app" ] && continue
             out="$GITHUB_WORKSPACE/static/out-$app"
@@ -396,22 +396,13 @@ jobs:
 
           # Blocklist enforced by the static-checks job; install every app that reaches here.
           
-            if grep -qe "^read \|SITE1=" "$app" 1>/dev/null || [[ "$pure_arg" =~ (wine) ]]; then
+            if grep -qe "^read \|SITE1=" "$app" 1>/dev/null; then
 
               echo 1 | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1
               ARGSNUMB=$(find /opt -maxdepth 2 -name 'remove' -print 2>/dev/null | sed 's|/remove||g' | tr ' ' '\n' | wc -l)
               if [ "$ARGSNUMB" = 1 ]; then
                 sleep 10
                 echo 1 | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1
-              fi
-
-            elif [[ "$pure_arg" =~ (bat-extras) ]]; then
-
-              echo y | timeout "$TIMEOUT_S" am -i bat "$app" --debug 2>&1
-              ARGSNUMB=$(find /opt -maxdepth 2 -name 'remove' -print 2>/dev/null | sed 's|/remove||g' | tr ' ' '\n' | wc -l)
-              if [ "$ARGSNUMB" = 1 ]; then
-                sleep 10
-                echo y | timeout "$TIMEOUT_S" am -i bat "$app" --debug 2>&1
               fi
 
             else
@@ -515,6 +506,9 @@ jobs:
           fetch-depth: 0
 
       - name: "Download results ⬇️"
+        # No chunk artifacts exist when the sweep was skipped: fail neither the
+        # step nor the job, the loop below simply finds no files.
+        if: ${{ needs.run-actions.result != 'skipped' }}
         uses: actions/download-artifact@v8
         with:
           # Chunk outputs only: the static artifact carries same-named
@@ -557,6 +551,8 @@ jobs:
             if [[ -f "$KoFile" ]]; then
               echo "$appname" | tee -a failing results/excluded
               rm -f "$KoFile"
+              # A retested app that fails again must not linger in tested.
+              if [ -f results/tested ]; then grep -vxF "$appname" results/tested > results/tested.tmp || true; mv results/tested.tmp results/tested; fi
               cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
               sort -u results/excluded -o results/excluded
               sort -u failing -o failing
@@ -564,6 +560,8 @@ jobs:
             else
               cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
               echo "$appname" >> results/tested
+              # A retested app that passes now must leave the excluded list.
+              if [ -f results/excluded ]; then grep -vxF "$appname" results/excluded > results/excluded.tmp || true; mv results/excluded.tmp results/excluded; fi
             fi
             echo '-----------------------------------------------------------------' >> results/log
             rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname"
@@ -655,6 +653,6 @@ jobs:
       - name: "Rotate tested list"
         run: |
           echo "Sweep complete, rotating tested list..." >> $GITHUB_STEP_SUMMARY
-          git mv results/tested results/tested.prev
+          git mv -f results/tested results/tested.prev
           git commit -m "cycle complete: rotate tested to tested.prev"
           git push --force-with-lease

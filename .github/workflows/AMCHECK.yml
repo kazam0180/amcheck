@@ -52,8 +52,8 @@ jobs:
       totest: 500
       chunk_size: 10
       upload_icons: false
-      reset_stats: ${{ inputs.reset_stats }}
-      retest_excluded: ${{ inputs.retest_excluded }}
+      reset_stats: ${{ inputs.reset_stats == true && 'true' || 'false' }}
+      retest_excluded: ${{ inputs.retest_excluded == true && 'true' || 'false' }}
       what_test: ${{ inputs.what_test }}
       how_many: ${{ inputs.how_many }}
     secrets: inherit

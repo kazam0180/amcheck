@@ -319,7 +319,7 @@ jobs:
     name: "🔨"
     needs: [generate-matrix, static-checks]
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 45
     if: ${{ needs.generate-matrix.outputs.skip != 'true' }}
     strategy:
       fail-fast: false

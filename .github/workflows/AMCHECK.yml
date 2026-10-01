@@ -542,7 +542,7 @@ jobs:
               echo "$appname" >> results/tested
             fi
             echo '-----------------------------------------------------------------' >> results/log
-            rm -f "$LogFile"
+            rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname"
           done
           sort -u results/tested -o results/tested
           rm -rf results/job-*

@@ -1,14 +1,13 @@
 name: "AMCHECK"
 
 on:
-  push:
-    branches: main
-    paths:
-      - 'programs/x86_64/**'
-
   repository_dispatch:
     types: [check]
 
+  # Fast path for changed apps: repository_dispatch (or manual dispatch) with
+  # what_test set to the changed app names tests only those apps; the hourly
+  # sweep covers the remainder. There is no push trigger in this repo because
+  # install scripts live in the AM repo, not here.
   workflow_dispatch:
     inputs:
       reset_stats:
@@ -27,13 +26,16 @@ on:
         default: ""
         type: string
       how_many:
-        description: "Number of apps: (max 256)"
+        description: "Number of apps: (max 500)"
         required: false
         default: ''
         type: integer
 
   schedule:
     - cron: '0 * * * *'
+    # Enable ONLY after a full TOTEST=500 run completes in under 25 minutes wall-clock
+    # (read from run duration in the Actions UI) AND owner accepts ~2x runner minutes:
+    # - cron: '*/30 * * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -46,7 +48,7 @@ permissions:
 env:
   REPO: ${{ github.repository_owner }}/AM
   BRANCH: main
-  TOTEST: 250
+  TOTEST: 500
   CHUNK_SIZE: 10
 
 jobs:
@@ -569,7 +571,7 @@ jobs:
           else
             git add results
             git commit -m "check"
-            git push --force-with-lease && echo "sync successfull" >> $GITHUB_STEP_SUMMARY || (git diff && git status)
+            git push --force-with-lease && echo "sync successfull" >> $GITHUB_STEP_SUMMARY || (git diff && git status && exit 1)
           fi
 
   already-tested:

@@ -1,5 +1,0 @@
-APP="7zip"
-APPIMAGE='no'
-GITHUB='yes'
-SITE="https://www.7-zip.org"
-DURATION=6

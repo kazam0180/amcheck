@@ -19737,3 +19737,13 @@ APPIMAGE='yes'
 GITHUB='yes'
 SITE="jjj-mo3/yardarm"
 -----------------------------------------------------------------
+APP="0ad"
+APPIMAGE='yes'
+GITHUB='no'
+SITE="https://play0ad.com"
+-----------------------------------------------------------------
+APP="7zip"
+APPIMAGE='no'
+GITHUB='yes'
+SITE="https://www.7-zip.org"
+-----------------------------------------------------------------

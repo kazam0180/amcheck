@@ -19826,3 +19826,15 @@ GITHUB='no'
 SITE="http://koreader.rocks"
 DURATION=0
 -----------------------------------------------------------------
+APP="0ad"
+APPIMAGE='yes'
+GITHUB='no'
+SITE="https://play0ad.com"
+DURATION=109
+-----------------------------------------------------------------
+APP="7zip"
+APPIMAGE='no'
+GITHUB='yes'
+SITE="https://www.7-zip.org"
+DURATION=5
+-----------------------------------------------------------------

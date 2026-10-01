@@ -258,29 +258,13 @@ jobs:
         with:
           repository: ${{ env.REPO }}
 
-        # Added ripgrep for bat
-      - name: "Cache dependencies"
-        uses: awalsh128/cache-apt-pkgs-action@latest
+      - name: "Checkout AMCHECK"
+        uses: actions/checkout@v7
         with:
-          packages: curl libnotify-bin ripgrep wget
-          version: 1.0
+          path: amcheck
 
-      - name: "Fix AppArmor"
-        run: |
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-
-      - name: "Install AM manually 🎁"
-        run: |
-          sudo mkdir -p /opt/am/modules /usr/local/bin || exit 1
-          sudo cp -r ./APP-MANAGER /opt/am/APP-MANAGER && sudo chmod a+x /opt/am/APP-MANAGER || exit 1
-          sudo ln -fs /opt/am/APP-MANAGER /usr/local/bin/am || exit 1
-          sudo touch /opt/am/remove || exit 1
-          sudo cp -r modules/*.am /opt/am/modules/
-          export AMDATADIR="${XDG_DATA_HOME:-$HOME/.local/share}"/AM
-          mkdir -p "$AMDATADIR" || exit 1
-          cp -r programs/x86_64-apps "$AMDATADIR"/ || exit 1
-          
+      - name: "Setup runner"
+        uses: ./amcheck/.github/actions/setup-runner
 
       - name: "Checkout repository"
         uses: actions/checkout@v7

@@ -39,7 +39,7 @@ permissions:
 
 jobs:
   check:
-    uses: ./_amcheck-core.yml
+    uses: ./.github/workflows/_amcheck-core.yml
     with:
       totest: 500
       chunk_size: 10

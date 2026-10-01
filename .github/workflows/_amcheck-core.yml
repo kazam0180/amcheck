@@ -537,54 +537,7 @@ jobs:
           git config --global user.email "noreply@github.com"
 
       - name: "Process log results"
-        run: |
-          mkdir -p results
-          for LogFile in results/out-* results/job-*/out-*; do
-            echo '-----------------------------------------------------------------'
-            echo "$LogFile out"
-            echo '-----------------------------------------------------------------'
-            [ -f "$LogFile" ] && cat "$LogFile"
-            echo '-----------------------------------------------------------------'
-            [ -f "$LogFile" ] || continue
-            jobdir=$(dirname "$LogFile")
-            appname=$(basename "$LogFile" | cut -d'-' -f2-)
-            echo '-----------------------------------------------------------------'
-            echo "$appname"
-            echo '-----------------------------------------------------------------'
-            KoFile="$jobdir/ko-$appname"
-            if [[ -f "$KoFile" ]]; then
-              echo "$appname" | tee -a failing results/excluded
-              rm -f "$KoFile"
-              # A retested app that fails again must not linger in tested.
-              if [ -f results/tested ]; then grep -vxF "$appname" results/tested > results/tested.tmp || true; mv results/tested.tmp results/tested; fi
-              cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
-              sort -u results/excluded -o results/excluded
-              sort -u failing -o failing
-              git add results/excluded
-            else
-              cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
-              echo "$appname" >> results/tested
-              # A retested app that passes now must leave the excluded list.
-              if [ -f results/excluded ]; then grep -vxF "$appname" results/excluded > results/excluded.tmp || true; mv results/excluded.tmp results/excluded; fi
-            fi
-            echo '-----------------------------------------------------------------' >> results/log
-            rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname"
-          done
-          sort -u results/tested -o results/tested
-          mkdir -p /tmp/keep
-          for f in tested tested.prev excluded log; do
-            [ -f "results/$f" ] && cp "results/$f" "/tmp/keep-$f"
-          done
-          rm -rf results
-          mkdir -p results
-          for f in tested tested.prev excluded log; do
-            [ -f "/tmp/keep-$f" ] && cp "/tmp/keep-$f" "results/$f"
-          done
-          git add -A results
-          if git status --porcelain -- results | grep -v -e 'results/tested$' -e 'results/tested.prev$' -e 'results/excluded$' -e 'results/log$' | grep -q '^A '; then
-            echo "unexpected new tracked file under results/"
-            exit 1
-          fi
+        run: bash .github/aggregate-results.sh
 
       - name: "Show results"
         if: ${{ needs.generate-matrix.outputs.skip != 'true' && inputs.reset_stats != 'true' }}
@@ -637,7 +590,30 @@ jobs:
           else
             git add results
             git commit -m "check"
-            git push --force-with-lease && echo "sync successfull" >> $GITHUB_STEP_SUMMARY || (git diff && git status && exit 1)
+            if git push --force-with-lease; then
+              echo "sync successfull" >> $GITHUB_STEP_SUMMARY
+              exit 0
+            fi
+            # Lost a push race: this job checked out its dispatch SHA while a
+            # sibling run committed first. Rebuild (never rebase): both sides
+            # append+resort the lists, which would conflict under rebase, but
+            # the aggregation is a pure function of base lists + artifacts.
+            echo "Push raced; rebuilding the same aggregation on fresh main…" | tee -a "$GITHUB_STEP_SUMMARY"
+            git fetch origin main || exit 1
+            git reset --hard origin/main || exit 1
+            retry_dl=$(mktemp -d)
+            gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir "$retry_dl" || exit 1
+            mkdir -p results
+            got=0
+            for d in "$retry_dl"/results-chunk-*/; do
+              [ -d "$d" ] || continue
+              cp -r "$d"* results/ && got=$((got+1))
+            done
+            [ "$got" -gt 0 ] || { echo "no chunk artifacts re-downloaded"; exit 1; }
+            bash .github/aggregate-results.sh || exit 1
+            git diff-index --quiet HEAD && { echo "nothing to commit after rebuild"; exit 0; }
+            git commit -m "check"
+            git push --force-with-lease && echo "sync successfull (2nd attempt)" >> $GITHUB_STEP_SUMMARY || (git diff && git status && exit 1)
           fi
 
   already-tested:
@@ -663,4 +639,14 @@ jobs:
           echo "Sweep complete, rotating tested list..." >> $GITHUB_STEP_SUMMARY
           git mv -f results/tested results/tested.prev
           git commit -m "cycle complete: rotate tested to tested.prev"
-          git push --force-with-lease
+          if git push --force-with-lease; then
+            exit 0
+          fi
+          # Same staleness as the results push (pinned checkout SHA): redo the
+          # trivially reproducible rotation on the fresh base instead of rebasing.
+          echo "Push raced; redoing rotation on fresh main…" | tee -a "$GITHUB_STEP_SUMMARY"
+          git fetch origin main || exit 1
+          git reset --hard origin/main || exit 1
+          git mv -f results/tested results/tested.prev || { echo "nothing left to rotate"; exit 0; }
+          git commit -m "cycle complete: rotate tested to tested.prev"
+          git push --force-with-lease || exit 1

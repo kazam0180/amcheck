@@ -241,11 +241,81 @@ jobs:
           fi
           MATRIX="${MATRIX%,}]}"
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          cp "$TOTEST_LIST" totest_selected.list
           rm -f "$TOTEST_LIST"
+
+      - name: "Upload totest list"
+        if: ${{ steps.set-matrix.outputs.skip != 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: totest
+          path: totest_selected.list
+          if-no-files-found: error
+          retention-days: 1
+
+  static-checks:
+    name: "static 🔍"
+    needs: generate-matrix
+    if: ${{ needs.generate-matrix.outputs.skip != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: "Checkout AM"
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.REPO }}
+
+      - name: "Checkout AMCHECK"
+        uses: actions/checkout@v7
+        with:
+          path: amcheck
+
+      - name: "Download totest"
+        uses: actions/download-artifact@v8
+        with:
+          name: totest
+
+      - name: "Static checks"
+        working-directory: programs/x86_64
+        run: |
+          set -uo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/static"
+          grep -v '^#' "$GITHUB_WORKSPACE/amcheck/.github/amcheck-blocklist.txt" > /tmp/blocklist || true
+          while IFS= read -r app || [ -n "$app" ]; do
+            [ -z "$app" ] && continue
+            out="$GITHUB_WORKSPACE/static/out-$app"
+            echo "APP=\"$app\"" >> "$out"
+            if grep -qe "appimage-extract\|mage\$\|tmp/\*mage" "$app" 1>/dev/null; then
+              echo "APPIMAGE='yes'" >> "$out"
+            else
+              echo "APPIMAGE='no'" >> "$out"
+            fi
+            if grep -q "api.github.com" "$app" 2>/dev/null; then
+              echo "GITHUB='yes'" >> "$out"
+            else
+              echo "GITHUB='no'" >> "$out"
+            fi
+            if grep -q "^SITE=" "$app" 2>/dev/null; then
+              SITE=$(eval echo "$(grep -i '^SITE=' "$app" | head -1 | sed 's/SITE=//g')")
+              echo "SITE=\"$SITE\"" >> "$out"
+            fi
+            if echo "$app" | grep -Eqf /tmp/blocklist; then
+              echo "$app: blocklisted, install skipped" >> "$out"
+              echo "$app" >> "$GITHUB_WORKSPACE/static/ko-$app"
+            fi
+          done < "$GITHUB_WORKSPACE/totest_selected.list"
+
+      - name: "Upload static results"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: static
+          path: static
+          retention-days: 1
 
   run-actions:
     name: "🔨"
-    needs: generate-matrix
+    needs: [generate-matrix, static-checks]
     runs-on: ubuntu-latest
     timeout-minutes: 360
     if: ${{ needs.generate-matrix.outputs.skip != 'true' }}
@@ -264,6 +334,12 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: amcheck
+
+      - name: "Download static results"
+        uses: actions/download-artifact@v8
+        with:
+          name: static
+          path: static
 
       - name: "Setup runner"
         uses: ./amcheck/.github/actions/setup-runner
@@ -290,21 +366,13 @@ jobs:
             start=$(date +%s)
             TIMEOUT_S=$(( ${TIMEOUT:-23} * 60 ))
             out="results/job-$CHUNK/out-$app"
-            echo "APP=\"$app\"" >> "$out"
-            if grep -qe "appimage-extract\|mage\$\|tmp/\*mage" "$app" 1>/dev/null; then
-              echo "APPIMAGE='yes'" >> "$out"
-            else
-              echo "APPIMAGE='no'" >> "$out"
+            if [ -f "static/ko-$app" ]; then
+              cat "static/out-$app" >> "$out"
+              echo "$app" >> "results/job-$CHUNK/ko-$app"
+              echo "DURATION=$(( $(date +%s) - start ))" >> "$out"
+              continue
             fi
-            if grep -q "api.github.com" "$app" 2>/dev/null; then
-              echo "GITHUB='yes'" >> "$out"
-            else
-              echo "GITHUB='no'" >> "$out"
-            fi
-            if grep -q "^SITE=" "$app" 2>/dev/null; then
-              SITE=$(eval echo "$(grep -i '^SITE=' "$app" | head -1 | sed 's/SITE=//g')")
-              echo "SITE=\"$SITE\"" >> "$out"
-            fi
+            cat "static/out-$app" >> "$out"
 
           # Static greps moved into the "test chunk" loop above.
 
@@ -328,31 +396,7 @@ jobs:
           # INSTALL THE APPLICATION
           #########################
 
-          # Blacklist apps with slow download in Github Actions
-          if [[ "$pure_arg" =~ (animashooter-junior|animashooter-pioneer|kiwix|ryujinx|ryujinx-canary) ]]; then
-
-            echo "This application cannot be installed on GitHub Actions due to slow download URL or a too weak domain" | tee -a results/job-$CHUNK/log-$app
-            echo "$app" >> results/job-$CHUNK/ok-$app
-            echo "DURATION=$(( $(date +%s) - start ))" >> "$out"
-            continue
-
-          # Blacklist apps that cannot be installed in Github Actions
-          elif [[ "$pure_arg" =~ (mudlet|openxcom|openxcom-extended|vhc-viewer-wayland|vhc-viewer-x11) ]]; then
-
-            echo "This application cannot be installed on GitHub Actions" | tee -a results/job-$CHUNK/log-$app
-            echo "$app" >> results/job-$CHUNK/ok-$app
-            echo "DURATION=$(( $(date +%s) - start ))" >> "$out"
-            continue
-
-          # Blacklist apps with an issue report opened
-          elif [[ "$pure_arg" =~ (koreader-nightly) ]]; then
-
-            echo "This application has a pending issue report" | tee -a results/job-$CHUNK/log-$app
-            echo "$app" >> results/job-$CHUNK/ok-$app
-            echo "DURATION=$(( $(date +%s) - start ))" >> "$out"
-            continue
-
-          else
+          # Blocklist enforced by the static-checks job; install every app that reaches here.
           
             if grep -qe "^read \|SITE1=" "$app" 1>/dev/null || [[ "$pure_arg" =~ (wine) ]]; then
 
@@ -441,7 +485,6 @@ jobs:
               echo "DURATION=$(( $(date +%s) - start ))" >> "$out"
               continue
             fi
-          fi
           echo "DURATION=$(( $(date +%s) - start ))" >> "$out"
           done
 

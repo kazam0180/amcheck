@@ -517,7 +517,11 @@ jobs:
       - name: "Download results ⬇️"
         uses: actions/download-artifact@v8
         with:
+          # Chunk outputs only: the static artifact carries same-named
+          # out-<app> files (metadata without install evidence); merging it
+          # would nondeterministically overwrite the chunk results.
           path: results
+          pattern: results-chunk-*
           merge-multiple: true
 
       - name: "Download appslist"

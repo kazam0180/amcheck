@@ -560,9 +560,17 @@ jobs:
             rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname"
           done
           sort -u results/tested -o results/tested
-          rm -rf results/job-* results/icons results/out-* results/ok-* results/ko-* results/log-*
-          git add results
-          if git status --porcelain | grep -v -e 'results/tested$' -e 'results/tested.prev$' -e 'results/excluded$' -e 'results/log$' | grep -q '^A '; then
+          mkdir -p /tmp/keep
+          for f in tested tested.prev excluded log; do
+            [ -f "results/$f" ] && cp "results/$f" "/tmp/keep-$f"
+          done
+          rm -rf results
+          mkdir -p results
+          for f in tested tested.prev excluded log; do
+            [ -f "/tmp/keep-$f" ] && cp "/tmp/keep-$f" "results/$f"
+          done
+          git add -A results
+          if git status --porcelain -- results | grep -v -e 'results/tested$' -e 'results/tested.prev$' -e 'results/excluded$' -e 'results/log$' | grep -q '^A '; then
             echo "unexpected new tracked file under results/"
             exit 1
           fi

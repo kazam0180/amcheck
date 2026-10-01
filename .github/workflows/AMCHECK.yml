@@ -339,7 +339,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: static
-          path: static
+          path: programs/x86_64/static
 
       - name: "Setup runner"
         uses: ./amcheck/.github/actions/setup-runner

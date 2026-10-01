@@ -499,6 +499,12 @@ jobs:
   update-results:
     name: "results 📰"
     needs: [generate-matrix, run-actions]
+    # Serialize all results/ pushes across concurrent runs: the job queued
+    # behind another checks out after it finishes, so --force-with-lease
+    # never meets a stale base and no sweep's commit is lost.
+    concurrency:
+      group: amcheck-results-push
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     if: (always() && inputs.reset_stats != 'true')
     steps:
@@ -638,6 +644,10 @@ jobs:
     name: "all 🏁"
     runs-on: ubuntu-latest
     needs: generate-matrix
+    # Same push-serializing group as update-results: rotation also commits.
+    concurrency:
+      group: amcheck-results-push
+      cancel-in-progress: false
     if: ${{ needs.generate-matrix.outputs.skip == 'true' }}
     steps:
       - name: "Checkout"

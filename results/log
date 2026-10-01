@@ -19763,3 +19763,8 @@ GITHUB='yes'
 SITE="https://www.7-zip.org"
 DURATION=6
 -----------------------------------------------------------------
+APP="nonexistent-app-xyz"
+APPIMAGE='no'
+GITHUB='no'
+DURATION=103
+-----------------------------------------------------------------

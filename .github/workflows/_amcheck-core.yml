@@ -55,7 +55,7 @@ env:
 jobs:
   triggered:
     if: github.event_name == 'repository_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: "Remotely triggered"
         uses: actions/checkout@v7
@@ -67,7 +67,7 @@ jobs:
 
   show-stats:
     name: "stats 📝"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       all: ${{ steps.count.outputs.all }}
       tested: ${{ steps.stats.outputs.tested }}
@@ -145,7 +145,7 @@ jobs:
     name: "matrix 🌀"
     if: inputs.reset_stats != 'true'
     needs: show-stats
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       skip: ${{ steps.set-matrix.outputs.skip }}
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -262,7 +262,7 @@ jobs:
     name: "static 🔍"
     needs: generate-matrix
     if: ${{ needs.generate-matrix.outputs.skip != 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
       - name: "Checkout AM"
@@ -321,7 +321,7 @@ jobs:
   run-actions:
     name: "🔨"
     needs: [generate-matrix, static-checks]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 45
     if: ${{ needs.generate-matrix.outputs.skip != 'true' }}
     strategy:
@@ -505,7 +505,7 @@ jobs:
     concurrency:
       group: amcheck-results-push
       cancel-in-progress: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: (always() && inputs.reset_stats != 'true')
     steps:
       - name: "Checkout"
@@ -620,7 +620,7 @@ jobs:
 
   already-tested:
     name: "all 🏁"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: generate-matrix
     # Same push-serializing group as update-results: rotation also commits.
     concurrency:

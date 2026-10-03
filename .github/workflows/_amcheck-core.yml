@@ -400,20 +400,20 @@ jobs:
           
             if grep -qe "^read \|SITE1=" "$app" 1>/dev/null; then
 
-              echo 1 | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1
+              echo 1 | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1 | grep -vE --line-buffered ' ([1-8][0-9]|90)%( |$)' || test "${PIPESTATUS[1]}" -eq 0
               ARGSNUMB=$(find /opt -maxdepth 2 -name 'remove' -print 2>/dev/null | sed 's|/remove||g' | tr ' ' '\n' | wc -l)
               if [ "$ARGSNUMB" = 1 ]; then
                 sleep 10
-                echo 1 | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1
+                echo 1 | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1 | grep -vE --line-buffered ' ([1-8][0-9]|90)%( |$)' || test "${PIPESTATUS[1]}" -eq 0
               fi
 
             else
 
-              echo y | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1
+              echo y | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1 | grep -vE --line-buffered ' ([1-8][0-9]|90)%( |$)' || test "${PIPESTATUS[1]}" -eq 0
               ARGSNUMB=$(find /opt -maxdepth 2 -name 'remove' -print 2>/dev/null | sed 's|/remove||g' | tr ' ' '\n' | wc -l)
               if [ "$ARGSNUMB" = 1 ]; then
                 sleep 10
-                echo y | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1
+                echo y | timeout "$TIMEOUT_S" am -i "$app" --debug 2>&1 | grep -vE --line-buffered ' ([1-8][0-9]|90)%( |$)' || test "${PIPESTATUS[1]}" -eq 0
               fi
 
             fi

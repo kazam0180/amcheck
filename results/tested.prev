@@ -12,7 +12,6 @@
 3nity-media
 432hz-player
 4kwall
-5ch-browser-template
 5ire
 6502-emulator
 7zip
@@ -210,8 +209,6 @@ angor
 ani-cli
 ani-gui
 ani-mime
-animashooter-junior
-animashooter-pioneer
 animathio
 anime-cursor
 animecix
@@ -507,7 +504,6 @@ basilisk2
 basiliskii-enhanced
 bastyon
 bat
-bat-extras
 batch-explorer
 batorrent
 battlearenatoshindenrecomp
@@ -1380,7 +1376,6 @@ deskly
 deskpad
 deskreen
 deskthing
-desktop-app-generate-quiz
 desktop-browserbase
 desktop-cc-gui
 desktop-django-starter
@@ -2859,8 +2854,6 @@ kitty
 kitty-pro
 kitupiikki
 kivarro
-kiwix
-kiwix-js-pwa
 kiya-agent
 kiyeovo
 kiyoshi
@@ -2948,7 +2941,6 @@ kvault
 kwave
 kyaraben
 kybern
-kylinwork
 lab-ledger
 labelnazuki
 labokit-electron
@@ -3605,7 +3597,6 @@ mtgatool-desktop
 mts-fogplay-client
 mtsync
 mudita-center
-mudlet
 muffon
 mullvad-browser
 multi-ai-chat-desktop
@@ -3798,7 +3789,6 @@ nobs-cad
 nobuf
 noctis
 nocturne-music
-node
 node-pdf
 nodeflow
 nodes
@@ -3935,7 +3925,6 @@ ollama
 omacal
 omafil
 omarchy-face-id
-omatrack
 omegat
 omekasy
 omera
@@ -4132,8 +4121,6 @@ opentyrian2000
 openvpn-gui-linux
 openwaggle
 openwhispr
-openxcom
-openxcom-extended
 openxjv
 openxray
 opera
@@ -6381,7 +6368,6 @@ webrecorder
 wechat
 wechatclaudecode
 weektodo
-weflow
 wekan
 weline
 wello-code
@@ -6435,7 +6421,6 @@ windows95
 windsurf-account-manager-simple
 windsurf-unlimited-cknb
 windusb-gui
-winegui
 wingsv-dex
 winpodx
 winrar
@@ -6480,7 +6465,6 @@ wootomation
 wora
 work-review
 workbuddy-switch
-workbuddy-switch-gateway
 workbuddy-switch2api
 workflowy
 workpulse

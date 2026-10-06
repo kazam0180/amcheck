@@ -103,4 +103,6 @@ wine-stable
 wine-staging
 wine-staging-ge-proton
 wine32-deploy
+winegui
+workbuddy-switch-gateway
 zalo

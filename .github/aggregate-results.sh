@@ -21,6 +21,7 @@ for LogFile in results/out-* results/job-*/out-*; do
   echo "$appname"
   echo '-----------------------------------------------------------------'
   KoFile="$jobdir/ko-$appname"
+  OkFile="$jobdir/ok-$appname"
   if [[ -f "$KoFile" ]]; then
     echo "$appname" | tee -a failing results/excluded
     rm -f "$KoFile"
@@ -31,10 +32,18 @@ for LogFile in results/out-* results/job-*/out-*; do
     sort -u failing -o failing
     git add results/excluded
   else
-    cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
-    echo "$appname" >> results/tested
-    # A retested app that passes now must leave the excluded list.
-    if [ -f results/excluded ]; then grep -vxF "$appname" results/excluded > results/excluded.tmp || true; mv results/excluded.tmp results/excluded; fi
+    if [[ -f "$OkFile" ]]; then
+      cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
+      echo "$appname" >> results/tested
+      # A retested app that passes now must leave the excluded list.
+      if [ -f results/excluded ]; then grep -vxF "$appname" results/excluded > results/excluded.tmp || true; mv results/excluded.tmp results/excluded; fi
+    else
+      # No marker: the install died before verdict (runner lost, step
+      # timeout, set -e abort). Partial output is not evidence: leave the
+      # app unlisted so the next sweep retries it instead of recording a
+      # false tested. Trace stays in this job's log (out file echoed above).
+      echo "NO-MARKER: $appname has output but neither ok nor ko marker; leaving unlisted for retry"
+    fi
   fi
   echo '-----------------------------------------------------------------' >> results/log
   rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname"

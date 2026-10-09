@@ -107858,3 +107858,15 @@ GITHUB='yes'
 SITE="svengdk/openburningsuite"
 DURATION=9
 -----------------------------------------------------------------
+APP="0ad"
+APPIMAGE='yes'
+GITHUB='no'
+SITE="https://play0ad.com"
+DURATION=198
+-----------------------------------------------------------------
+APP="7zip"
+APPIMAGE='no'
+GITHUB='yes'
+SITE="https://www.7-zip.org"
+DURATION=5
+-----------------------------------------------------------------

@@ -119870,3 +119870,9 @@ GITHUB='yes'
 SITE="superbacked/superbacked"
 DURATION=9
 -----------------------------------------------------------------
+APP="ryujinx"
+APPIMAGE='yes'
+GITHUB='no'
+SITE="https://ryujinx.app"
+DURATION=0
+-----------------------------------------------------------------

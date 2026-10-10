@@ -618,6 +618,46 @@ jobs:
             git push --force-with-lease && echo "sync successfull (2nd attempt)" >> $GITHUB_STEP_SUMMARY || (git diff && git status && exit 1)
           fi
 
+  verdict:
+    name: "verdict 📋"
+    needs: [generate-matrix, run-actions, update-results]
+    # Fails the run when any app failed, so the Actions list stays honest:
+    # green means nothing needs fixing, red means open the run. Chunk jobs
+    # stay green on app failures (infra signal intact); results are already
+    # committed by update-results before this reports.
+    if: ${{ always() && needs.generate-matrix.outputs.skip != 'true' && needs.run-actions.result != 'skipped' }}
+    runs-on: ubuntu-26.04
+    steps:
+      - name: "Download chunk results ⬇️"
+        uses: actions/download-artifact@v8
+        with:
+          path: verdict
+          pattern: results-chunk-*
+          merge-multiple: true
+
+      - name: "Report failed apps"
+        run: |
+          fails=$(find verdict -name 'ko-*' | sed 's:.*/ko-::' | sort -u)
+          unknowns=$(for f in $(find verdict -name 'out-*'); do
+            a=$(basename "$f" | cut -d'-' -f2-)
+            d=$(dirname "$f")
+            [ -f "$d/ok-$a" ] || [ -f "$d/ko-$a" ] || echo "$a"
+          done | sort -u)
+          {
+            echo "## Verdict"
+            echo ""
+            echo "Failed apps (ko marker, in results/excluded):"
+            if [ -z "$fails" ]; then echo "- (none)"; else echo "$fails" | sed 's/^/- /'; fi
+            echo ""
+            echo "No-result apps (output but no marker, will retry):"
+            if [ -z "$unknowns" ]; then echo "- (none)"; else echo "$unknowns" | sed 's/^/- /'; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$fails$unknowns" ]; then
+            echo "::error::apps need attention, see summary"
+            exit 1
+          fi
+          echo "all apps passed ✅" >> "$GITHUB_STEP_SUMMARY"
+
   already-tested:
     name: "all 🏁"
     runs-on: ubuntu-26.04

@@ -306,7 +306,7 @@ jobs:
             fi
             if echo "$app" | grep -Eqf /tmp/blocklist; then
               echo "$app: blocklisted, install skipped" >> "$out"
-              echo "$app" >> "$GITHUB_WORKSPACE/static/ko-$app"
+              echo "$app" >> "$GITHUB_WORKSPACE/static/skip-$app"
             fi
           done < "$GITHUB_WORKSPACE/totest_selected.list"
 
@@ -366,9 +366,9 @@ jobs:
             start=$(date +%s)
             TIMEOUT_S=$(( ${TIMEOUT:-23} * 60 ))
             out="results/job-$CHUNK/out-$app"
-            if [ -f "static/ko-$app" ]; then
+            if [ -f "static/skip-$app" ]; then
               cat "static/out-$app" >> "$out"
-              echo "$app" >> "results/job-$CHUNK/ko-$app"
+              echo "$app" >> "results/job-$CHUNK/skip-$app"
               echo "DURATION=$(( $(date +%s) - start ))" >> "$out"
               continue
             fi
@@ -638,16 +638,20 @@ jobs:
       - name: "Report failed apps"
         run: |
           fails=$(find verdict -name 'ko-*' | sed 's:.*/ko-::' | sort -u)
+          skipped=$(find verdict -name 'skip-*' | sed 's:.*/skip-::' | sort -u)
           unknowns=$(for f in $(find verdict -name 'out-*'); do
             a=$(basename "$f" | cut -d'-' -f2-)
             d=$(dirname "$f")
-            [ -f "$d/ok-$a" ] || [ -f "$d/ko-$a" ] || echo "$a"
+            [ -f "$d/ok-$a" ] || [ -f "$d/ko-$a" ] || [ -f "$d/skip-$a" ] || echo "$a"
           done | sort -u)
           {
             echo "## Verdict"
             echo ""
             echo "Failed apps (ko marker, in results/excluded):"
             if [ -z "$fails" ]; then echo "- (none)"; else echo "$fails" | sed 's/^/- /'; fi
+            echo ""
+            echo "Skipped by policy (blocklist/static, not failures):"
+            if [ -z "$skipped" ]; then echo "- (none)"; else echo "$skipped" | sed 's/^/- /'; fi
             echo ""
             echo "No-result apps (output but no marker, will retry):"
             if [ -z "$unknowns" ]; then echo "- (none)"; else echo "$unknowns" | sed 's/^/- /'; fi

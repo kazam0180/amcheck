@@ -22,6 +22,7 @@ for LogFile in results/out-* results/job-*/out-*; do
   echo '-----------------------------------------------------------------'
   KoFile="$jobdir/ko-$appname"
   OkFile="$jobdir/ok-$appname"
+  SkipFile="$jobdir/skip-$appname"
   if [[ -f "$KoFile" ]]; then
     echo "$appname" | tee -a failing results/excluded
     rm -f "$KoFile"
@@ -30,6 +31,16 @@ for LogFile in results/out-* results/job-*/out-*; do
     cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
     sort -u results/excluded -o results/excluded
     sort -u failing -o failing
+    git add results/excluded
+  elif [[ -f "$SkipFile" ]]; then
+    # Policy skip (blocklist/static): not a failure, but the app stays out
+    # of the tested set. Recorded in excluded (the don't-retest list) without
+    # touching the failing record, so the verdict job stays green on skips.
+    echo "$appname" >> results/excluded
+    rm -f "$SkipFile"
+    if [ -f results/tested ]; then grep -vxF "$appname" results/tested > results/tested.tmp || true; mv results/tested.tmp results/tested; fi
+    cat "$LogFile" | grep -E '(^.*=.*$|^.*----.*$)' >> results/log
+    sort -u results/excluded -o results/excluded
     git add results/excluded
   else
     if [[ -f "$OkFile" ]]; then
@@ -46,7 +57,7 @@ for LogFile in results/out-* results/job-*/out-*; do
     fi
   fi
   echo '-----------------------------------------------------------------' >> results/log
-  rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname"
+  rm -f "$LogFile" "$jobdir/log-$appname" "$jobdir/ok-$appname" "$jobdir/skip-$appname"
 done
 sort -u results/tested -o results/tested
 mkdir -p /tmp/keep

@@ -119876,3 +119876,9 @@ GITHUB='no'
 SITE="https://ryujinx.app"
 DURATION=0
 -----------------------------------------------------------------
+APP="7zip"
+APPIMAGE='no'
+GITHUB='yes'
+SITE="https://www.7-zip.org"
+DURATION=42
+-----------------------------------------------------------------

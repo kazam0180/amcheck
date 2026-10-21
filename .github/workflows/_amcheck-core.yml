@@ -176,18 +176,9 @@ jobs:
             cp appslist totest_tmp.list
           fi
           if [[ -f results/excluded ]]; then
-            echo "Excluded exists"
-            comm --check-order -23 totest_tmp.list results/excluded > totest.list
-            if [ ! -s totest.list ]; then
-              echo "List is empty"
-              echo " 🏁 Nothing to test 🏁" >> $GITHUB_STEP_SUMMARY
-              echo "skip=true" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-          else
-            echo "Creating new list"
-            mv totest_tmp.list totest.list
+            echo "Excluded exists — retesting excluded apps too"
           fi
+          mv totest_tmp.list totest.list
           TOTEST_LIST=$(mktemp)
           if [ ! -z "${{ inputs.what_test }}" ]; then
             echo "Testing only: ${{ inputs.what_test }}"

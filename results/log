@@ -280861,3 +280861,9 @@ GITHUB='yes'
 SITE="mskill1/zynkbot"
 DURATION=13
 -----------------------------------------------------------------
+APP="ryujinx"
+APPIMAGE='yes'
+GITHUB='no'
+SITE="https://ryujinx.app"
+DURATION=0
+-----------------------------------------------------------------

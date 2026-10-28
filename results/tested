@@ -61,6 +61,7 @@ adbkit
 adelie
 adeorq
 adiman
+adm
 adobe-flash-player
 adosmissioncontrol
 adt-studio
@@ -129,6 +130,7 @@ agentry
 agents-dont-sleep
 agents-room
 agentscommander
+agentshot
 aggregate-mail
 aghub
 aglaia
@@ -380,6 +382,7 @@ apocrypha
 app-hub
 app-outlet
 appflowy
+appglider
 appherder
 apphub
 appify
@@ -443,6 +446,7 @@ argus-overview
 ari
 ark.desktop.wallet
 arkaway
+arkdraw
 arma3-unix-launcher
 armagetronad
 armcord
@@ -453,6 +457,7 @@ arokiyam-app
 arrowdl
 arroxy
 ars-magica-character-generator
+arstack61850
 artcraft-nix
 artcraft-toolbox
 artdaddy
@@ -489,6 +494,7 @@ asrpro
 assella
 assembly-notes
 aster
+aster-bridge
 astera
 asteria
 astonia-community-client
@@ -674,6 +680,7 @@ baudrun
 bauh
 bava
 bawkterm
+bayesian-ssh
 bazecor
 bb
 bbdump
@@ -1442,6 +1449,7 @@ comet-ai
 comfer-wallpaper
 comfylauncher
 comic-book-reader
+comic-commander
 comic-reader
 comic-strip-browser
 comiccatcher
@@ -1486,6 +1494,7 @@ connexio
 consisterm
 consoleworkbench
 constrict
+constructcad
 container-desktop
 containerlab-app
 containerus
@@ -1668,6 +1677,7 @@ cutepeaks
 cutevariant
 cutout-app
 cutter
+cutvii
 cvease
 cvrx
 cxshell
@@ -1704,12 +1714,14 @@ dartform
 dashai
 dashbeam
 dashboard
+dashboards-desktop
 dashi-taskboard
 dashplayer
 dashy-app
 data-peek
 database-dossier
 datadock
+datamine-explorer
 datapanel
 dataset-annotator
 dataset-generator
@@ -1717,6 +1729,7 @@ dataseteditor
 dataweave-studio
 datazen
 datcord
+daw-project-manager
 dawn
 dawn-installer
 dawn-science
@@ -1981,6 +1994,7 @@ dotghostboard
 dotline
 dotnetdeployer-fleet
 dots
+dotscramble
 dotto
 doublecmd-gtk
 doublecmd-qt
@@ -2013,6 +2027,7 @@ dream
 dream-voicetraining
 dream-work-theme
 dreamm
+drexius-terminal
 drh-launcher
 drift
 drill
@@ -2050,6 +2065,8 @@ dsh-portable
 dsh-studio
 dsh-ui
 dshare-hid
+dshdesktop
+dshnext
 dspi-console
 dstask
 dstx
@@ -2097,6 +2114,7 @@ eagle
 eaglemode
 eaon-desktop
 ear2finger
+eara
 earheart
 earthcraft
 earthworm-jim-hd-recompiled
@@ -2225,6 +2243,7 @@ emulsion
 emuze
 en-croissant
 enchantedarmsrecomp
+enclose
 encodeforge
 encodex
 encounty
@@ -2646,6 +2665,7 @@ foundation
 four
 foxfolio
 fpm
+fpv-dvr-cleaner
 fpvtheplanet
 fractale
 frag
@@ -2964,6 +2984,7 @@ gnu-octave
 gnumeric
 go-notes
 go-pd
+go-pob
 go-spotify-cli
 go-todo
 go2tv
@@ -3108,6 +3129,7 @@ gum
 gumdrop-studio
 gurushots-auto-vote
 gutterberg
+guya
 gvim
 gwenview
 gxc-smart-contract-ide
@@ -3388,6 +3410,7 @@ imsg
 imsprog
 imthemes
 inboxer
+incarnamind
 incott-driver-desktop
 index0
 indra
@@ -3483,6 +3506,7 @@ isle-portable
 isobar
 isolate
 ispoofermotion-v2
+iss2000-recomp
 istara
 itch.io
 iterm
@@ -3731,6 +3755,7 @@ kimi-code-rs
 kimi-work-linux
 kimitzu-client
 kimix
+kimo
 kindling
 kindling-cli
 kinema
@@ -3771,6 +3796,7 @@ kl4a
 klaudio-panels
 klaussy-desktop
 kleiner-brauhelfer-2
+klikdesign
 kliksnap
 klip
 kliveide
@@ -3785,6 +3811,7 @@ kmon
 kmonad
 kmux
 kmymoney
+knack-pc
 knead-net-gui
 knights
 knowemail
@@ -3824,6 +3851,7 @@ kovobs
 kpat
 kpix
 kps
+kraken
 kraken-player
 krate
 krita
@@ -3942,6 +3970,7 @@ leagent
 leanstudio
 leapmux
 leapp
+learnharness
 lectic
 lecture-subtitle-translator
 lecturestudio
@@ -4140,6 +4169,7 @@ lociant
 lockbook-cli
 lockbook-desktop
 lockbox-local
+lockra
 lockroot
 loenn
 lofi
@@ -4162,6 +4192,7 @@ looofix
 loop
 loopauditioneer
 looper
+loot-table
 loqa-apps
 lorastudio
 lore
@@ -4396,6 +4427,7 @@ mayros
 mazesolver
 mbcord
 mc-gdk-launcher-gui
+mc707-toolbox
 mced
 mcfly
 mcp-desktop
@@ -4494,6 +4526,7 @@ mesh-client
 meshchatx
 meshcoat
 meshcommunityplanner
+meshcraft
 meshinspector
 meshlab
 meshmill
@@ -4529,6 +4562,7 @@ miaogu-notepad
 miaominal
 miaz
 micky
+microbot-launcher
 microbrowser
 microemacs
 micropad
@@ -4802,6 +4836,7 @@ musicalypse
 musicat
 musichammer
 musicott
+musike
 mustaphatr-s-d2k-mod
 muster
 muster-code
@@ -5329,6 +5364,7 @@ openanime-linux
 openapi-tui
 openapplyr
 openarena
+openastrocc
 openatc-ai
 openaudible
 openaudible-bookorganizer
@@ -5540,6 +5576,7 @@ orcaslicer-devel
 orcastudio
 orcha-writer
 orden
+order1886-pc
 org2
 origread
 orionlauncher
@@ -5945,6 +5982,7 @@ plainrepo
 plainva
 planes
 planet-blupi
+planetary
 planify
 plano
 platform
@@ -6365,6 +6403,7 @@ qzmusic-pc
 qzonephoto
 r-passmanager
 r-shell
+r0
 r2
 r2-youloader
 r2modman
@@ -6396,6 +6435,7 @@ raml-kql
 ramus
 randmatqugea
 random-ai-prompt
+randomized-eve-ii
 randpass
 rapidcmi5
 rapidhls
@@ -6545,6 +6585,7 @@ respeaker-console
 responsively
 restless
 restorekit
+restura
 resultv
 reticle
 retiree-plan
@@ -6727,6 +6768,7 @@ rustmusic-desktop
 rustty
 rusty-backup
 rusty-g6
+rusty-inbox
 rusty-rain
 rustypaste
 rvgl
@@ -6827,6 +6869,7 @@ screenmagnet
 screenpolish
 screentranslator
 scribble
+scribe
 scribedog
 scribus
 scriptbreak
@@ -6955,6 +6998,7 @@ shelo
 shiddat
 shield-optimizer
 shift
+shiftray
 shinden-client
 shiny-egg
 shioaji-pro-app
@@ -7000,6 +7044,7 @@ signal-without-smartphone
 signature-one
 signboard
 signex
+sikemux
 silent-tiangong
 silex-desktop
 siliconsneaker
@@ -7312,6 +7357,7 @@ ssf2t-hd-remix-recompiled
 ssh-at
 ssh-mitm
 sshclient
+sshfire
 sshpilot
 sslax-nms
 ssplot
@@ -7480,6 +7526,7 @@ superbomberman5snesrecomp
 supercargo
 supercell-wx
 superfile
+superfumbbl-client
 supermarioland2recomp
 supermariowar
 supermarioworldrecomp
@@ -7751,6 +7798,7 @@ thermal-tools
 thermusqt
 theseus
 theweb
+thewired
 thief
 thinkutils
 thinkwatch-lite
@@ -7868,6 +7916,7 @@ tor-browser-alpha
 torchat
 torcs
 tore-fighters
+torflix
 torii-osu
 toril
 torrentdeck
@@ -7915,6 +7964,7 @@ tranzit
 travel-agent
 traycer
 tree-monk
+treeix
 trelby
 trellis
 trellis-card
@@ -8237,6 +8287,7 @@ video-hub
 video-trimmer
 video-uniquifier
 video2x
+videojanai
 videomass
 videoswarm
 vidmask
@@ -8530,6 +8581,7 @@ wirebrowser
 wireframesketcher
 wireguard-gui
 wireless-microphone-analyzer
+wirely
 wireshark
 wiretrace
 wirewright
@@ -8621,6 +8673,7 @@ x-minecraft-launcher
 x-pixiv
 xandsuite
 xapkdetector
+xarch-theme-studio
 xash3d-fwgs
 xava
 xbooxp
@@ -8727,6 +8780,7 @@ yanhekt-autoslides
 yank
 yank-note
 yap
+yapfast
 yappynotes
 yaqmc
 yardarm
@@ -8740,6 +8794,7 @@ yesplaymusic
 yet-another-open-file-converter
 yetanotherbusapp
 yetanothersshclient
+yeteasemusic
 yfitops
 yggtray
 yhtua
